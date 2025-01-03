@@ -60,7 +60,6 @@ def process_one_patient(patient):
         ct_img = nib.load(os.path.join(path_to_ct, f'{patient}.nii.gz'))
         rootLogger.debug(f'patient {patient}')
 
-
     combined = None
 
     for level, specs in level_specs.items():
@@ -87,9 +86,9 @@ def process_one_patient(patient):
             volumes.append(level_mask.sum())
             rootLogger.debug(f'Saving {level}.nii.gz for {patient}')
             ni_img = nib.Nifti1Image(level_mask, ct_img.affine, ct_img.header)
-            nib.save(ni_img, f'{output_dir}/{patient}/{level}.nii.gz')   
+            nib.save(ni_img, f'{output_dir}/SEG/{patient}/{level}.nii.gz')   
         except Exception as e:
-            rootLogger.error(f'Could not process {level} for {patient}')
+            rootLogger.error(f'Could not process {level} for {patient} because of {e}')
     rootLogger.debug(f'Saving volumes for {patient}')
     pixdim = ct_img.header['pixdim']
     vox_vol = pixdim[1] * pixdim[2] * pixdim[3]
