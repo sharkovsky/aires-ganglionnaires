@@ -1,4 +1,5 @@
-from library import define_area_by_specs, level_specs, totalseg_tasks
+from library import define_area_by_specs, totalseg_tasks
+from lymph-node-levels-specs import level_specs
 import os
 import logging
 import multiprocessing
