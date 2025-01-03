@@ -81,7 +81,7 @@ def process_one_patient(patient):
                                         structure
                                     )).get_fdata()
                     combined = np.clip(combined + segdata.astype(np.int32), 0, 1)
-                    rootLogger.debug(f'Finished combining all masks for {patient}')
+                rootLogger.debug(f'Finished combining all masks for {patient}')
             level_mask *= 1 - combined
             result_levels.append(level)
             volumes.append(level_mask.sum())
