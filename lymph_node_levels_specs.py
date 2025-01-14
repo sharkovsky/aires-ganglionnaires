@@ -98,23 +98,23 @@ level_specs = {
         'right border': [{'border': ['right border'], 'structure': 'platysma_right'}]
         },
     'level_via_left': {
-        'inferior border': [{'border': ['inferior border'], 'structure': 'sternum'}], #pixel le plus haut
-        'superior border': [{'border': ['superior border'], 'structure': 'hyoid'}], #pixel le plus bas
+        'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
+        'superior border': [{'border': ['inferior border'], 'structure': 'hyoid'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior border'], 'structure': 'thyrohyoid_left'}], #pixel le plus antérieure
         'anterior border': [{'border': ['anterior border'], 'structure': 'platysma_left'}],
         'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_left'}],
         'right border': [{'border': ['right border'], 'structure': 'sternocleidomastoid_right'}]
         },
     'level_via_right': {
-        'inferior border': [{'border': ['inferior border'], 'structure': 'sternum'}], #pixel le plus haut
-        'superior border': [{'border': ['superior border'], 'structure': 'hyoid'}], #pixel le plus bas
+        'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
+        'superior border': [{'border': ['inferior border'], 'structure': 'hyoid'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior border'], 'structure': 'thyrohyoid_right'}], #pixel le plus antérieure
         'anterior border': [{'border': ['anterior border'], 'structure': 'platysma_right'}],
         'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_left'}],
         'right border': [{'border': ['right border'], 'structure': 'sternocleidomastoid_right'}]
         },
     'level_vib_left': {
-        'inferior border': [{'border': ['inferior border'], 'structure': 'sternum'}], #pixel le plus haut
+        'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
         'superior border': [{'border': ['superior border'], 'structure': 'thyroid_cartilage'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior border'], 'structure': 'prevertebral_left'}], #pixel les plu santérieures
         'anterior border': [{'border': ['anterior border'], 'structure': 'thyrohyoid_left'}], #pixel le plus postérieure
@@ -122,7 +122,7 @@ level_specs = {
         'right border': [{'border': ['right border'], 'structure': 'trachea'}]
         },
     'level_vib_right': {
-        'inferior border': [{'border': ['inferior border'], 'structure': 'sternum'}], #pixel le plus haut
+        'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
         'superior border': [{'border': ['superior border'], 'structure': 'thyroid_cartilage'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior border'], 'structure': 'prevertebral_right'}], #pixel les plu santérieures
         'anterior border': [{'border': ['anterior border'], 'structure': 'thyrohyoid_right'}], #pixel le plus postérieure
