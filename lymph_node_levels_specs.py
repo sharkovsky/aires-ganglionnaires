@@ -27,7 +27,7 @@ level_specs = {
     'level_ib_right': {
         'inferior border': [{'border': ['inferior border'], 'structure': 'hyoid'}], #pixel le plus bas
         'superior border': [{'border': ['superior border'], 'structure': 'submandibular_gland_right'}], #Pixel le plus bas
-        'posterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
+        'posterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
         'anterior border': [{'border': ['anterior border'], 'structure': 'skull'}], #pixel le plus antérieure
 #        'lateral border': [{'border': ['lateral border'], 'structure': 'medial_surface_of_mandible'}]
         'left border': [{'border': ['left border'], 'structure': 'digastric_right'}], #pixels les plus à droites
