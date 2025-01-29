@@ -46,11 +46,14 @@ def process_one_patient(patient):
 
     rootLogger.info(f'Patient {patient}')
     
+    # Generic admin such as creating directories
     out_dir = f'{output_dir}/SEG/{patient}'
     if os.path.exists(out_dir):
         rootLogger.debug(f'Output directory already exists for {patient}. Skipping processing.')
         return
     os.makedirs(out_dir, exist_ok = True)
+
+    # Load CT data
     if False:  # for Autopet
         patient_nodate = '_'.join(patient.split('_')[:2])
         imgdir = os.listdir(os.path.join(path_to_ct, patient_nodate))[0]
@@ -60,13 +63,15 @@ def process_one_patient(patient):
         ct_img = nib.load(os.path.join(path_to_ct, f'{patient}.nii.gz'))
         rootLogger.debug(f'patient {patient}')
 
+    # Generate each area one-by-one in a loop
     combined = None
-
     for level, specs in level_specs.items():
         try:
             rootLogger.info(f'Computing {level} for {patient}')
+            # 1. Start by creating a "box" that defines the area
             level_mask = define_area_by_specs(specs, patient, path_to_totalseg_segmentations, totalseg_structure_to_task)
-            if combined is None:
+            # 2. Refinement: remove all other totalsegmentator structures
+            if combined is None:  # Only for the first time: we combine all other totalsegmentator masks 
                 rootLogger.info(f'Combining all totalseg masks for {patient}')
                 combined = np.zeros_like(level_mask, dtype=np.int32)
                 for structure, task in totalseg_structure_to_task.items():
@@ -82,6 +87,15 @@ def process_one_patient(patient):
                     combined = np.clip(combined + segdata.astype(np.int32), 0, 1)
                 rootLogger.debug(f'Finished combining all masks for {patient}')
             level_mask *= 1 - combined
+            # 3. Refinement: remove space outside of the body
+            body = nib.load(os.path.join(
+                                path_to_totalseg_segmentations,
+                                'body',
+                                patient,
+                                'body.nii.gz'
+                            )).get_fdata()
+            level_mask *= body
+            # Save results
             result_levels.append(level)
             volumes.append(level_mask.sum())
             rootLogger.debug(f'Saving {level}.nii.gz for {patient}')
