@@ -127,7 +127,7 @@ level_specs = {
         'posterior border': [{'border': ['posterior border'], 'structure': 'prevertebral_right'}], #pixel les plu santérieures
         'anterior border': [{'border': ['anterior border'], 'structure': 'thyrohyoid_right'}], #pixel le plus postérieure
         'left border': [{'border': ['left border'], 'structure': 'trachea'}],
-        'right border': [{'border': ['right border'], 'structure': ' common_carotid_artery_right'}], #pixel le plus à gauche 
+        'right border': [{'border': ['right border'], 'structure': 'common_carotid_artery_right'}], #pixel le plus à gauche 
         }
     }
 
