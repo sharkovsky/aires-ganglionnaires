@@ -209,7 +209,7 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
                         seg_filename
                     )
                     organ_segmentation = nib.load(seg_file_path).get_fdata()
-                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, slice_by_slice_)
+                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, False)  # slice-by-slice always False for z borders
  
         # do the other borders
         for border, specs in area_specs.items():
