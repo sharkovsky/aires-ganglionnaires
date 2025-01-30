@@ -124,7 +124,7 @@ if __name__ == '__main__':
     patients_df = pd.read_csv('compliant_scan_ids_cancer_patients.csv')
     patients = patients_df['compliant_scan_ids'].values.tolist()
     rootLogger.info('Starting now')
-    pool = multiprocessing.Pool(processes=2)
+    pool = multiprocessing.Pool(processes=4)
     pool.map(process_one_patient, patients)
 
 
