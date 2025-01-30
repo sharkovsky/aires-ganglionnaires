@@ -1,4 +1,4 @@
-from library import define_area_by_specs, totalseg_tasks
+from library import define_area_by_specs_with_heuristics, totalseg_tasks
 from lymph_node_levels_specs import level_specs
 import os
 import logging
@@ -49,7 +49,7 @@ def process_one_patient(patient):
     # Generic admin such as creating directories
     out_dir = f'{output_dir}/SEG/{patient}'
     if os.path.exists(out_dir):
-        rootLogger.debug(f'Output directory already exists for {patient}. Skipping processing.')
+        rootLogger.info(f'Output directory already exists for {patient}. Skipping processing.')
         return
     os.makedirs(out_dir, exist_ok = True)
 
@@ -60,16 +60,23 @@ def process_one_patient(patient):
         ct_img = nib.load(os.path.join(path_to_ct, patient_nodate, imgdir, 'CT.nii.gz'))
         rootLogger.debug(f'patient no date {patient_nodate}')
     else:
-        ct_img = nib.load(os.path.join(path_to_ct, f'{patient}.nii.gz'))
+        try:
+            ct_img = nib.load(os.path.join(path_to_ct, f'{patient}.nii.gz'))
+        except FileNotFoundError:
+            rootLogger.error(f'Could not find {path_to_ct}/{patient}.nii.gz Skipping.')
+            return
         rootLogger.debug(f'patient {patient}')
 
     # Generate each area one-by-one in a loop
     combined = None
     for level, specs in level_specs.items():
+        rootLogger.info(f'Computing {level} for {patient}')
         try:
-            rootLogger.info(f'Computing {level} for {patient}')
             # 1. Start by creating a "box" that defines the area
-            level_mask = define_area_by_specs(specs, patient, path_to_totalseg_segmentations, totalseg_structure_to_task)
+            level_mask = define_area_by_specs_with_heuristics(specs, 
+                    patient, 
+                    path_to_totalseg_segmentations, 
+                    totalseg_structure_to_task)
             # 2. Refinement: remove all other totalsegmentator structures
             if combined is None:  # Only for the first time: we combine all other totalsegmentator masks 
                 rootLogger.info(f'Combining all totalseg masks for {patient}')
@@ -88,6 +95,7 @@ def process_one_patient(patient):
                 rootLogger.debug(f'Finished combining all masks for {patient}')
             level_mask *= 1 - combined
             # 3. Refinement: remove space outside of the body
+            rootLogger.info(f'Removing space outside body for {patient} {level}')
             body = nib.load(os.path.join(
                                 path_to_totalseg_segmentations,
                                 'body',
@@ -116,7 +124,7 @@ if __name__ == '__main__':
     patients_df = pd.read_csv('compliant_scan_ids_cancer_patients.csv')
     patients = patients_df['compliant_scan_ids'].values.tolist()
     rootLogger.info('Starting now')
-    pool = multiprocessing.Pool(processes=4)
+    pool = multiprocessing.Pool(processes=2)
     pool.map(process_one_patient, patients)
 
 
