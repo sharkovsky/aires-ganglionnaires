@@ -90,7 +90,7 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
     if slice_by_slice:
         area_mask = np.zeros_like(organ_segmentation)
         axis_indices, z_indices = get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
-        for i in range(z_indices):
+        for i in range(len(z_indices)):
             selecting_slice = slice(axis_indices[i], None) if one_after else slice(None, axis_indices[i])
             match axis:
                 case 0:
