@@ -12,8 +12,8 @@ totalseg_tasks = ['total', 'tissue', 'head_muscles', 'head_glands_cavities', 'he
 specs_to_args = {
     'inferior border': {'axis': 2, 'get_largest_index': False,  'one_after': True},
     'superior border': {'axis': 2, 'get_largest_index': True,  'one_after': False},
-    'anterior border': {'axis': 1, 'get_largest_index': True,  'one_after': False},
-    'posterior border': {'axis': 1, 'get_largest_index': False,  'one_after': True},
+    'anterior border': {'axis': 1, 'get_largest_index': False,  'one_after': True},
+    'posterior border': {'axis': 1, 'get_largest_index': True,  'one_after': False},
     'left border': {'axis': 0, 'get_largest_index': True,  'one_after': False},
     'right border': {'axis': 0, 'get_largest_index': False,  'one_after': True},
 }
