@@ -98,6 +98,20 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
                 case 1:
                     indices = (slice(None), selecting_slice, z_indices[i])
             area_mask[indices] = 1
+            # everything "before" the lowest z index
+            selecting_slice = slice(axis_indices[0], None) if one_after else slice(None, axis_indices[0])
+            if axis == 0:
+                indices = (selecting_slice, slice(None), slice(0,z_indices[0]))
+            elif axis == 1:
+                indices = (slice(None), selecting_slice, slice(0,z_indices[0]))
+            area_mask[indices] = 1
+            # everything "after" the highest z index
+            selecting_slice = slice(axis_indices[-1], None) if one_after else slice(None, axis_indices[-1])
+            if axis == 0:
+                indices = (selecting_slice, slice(None), slice(z_indices[-1],None))
+            elif axis == 1:
+                indices = (slice(None), selecting_slice, slice(z_indices[-1],None))
+            area_mask[indices] = 1
     else:
         idx = get_extremal_idx(organ_segmentation, axis, get_largest_index)
         area_mask = np.zeros_like(organ_segmentation)
