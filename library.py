@@ -92,11 +92,10 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         axis_indices, z_indices = get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
         for i in range(len(z_indices)):
             selecting_slice = slice(axis_indices[i], None) if one_after else slice(None, axis_indices[i])
-            match axis:
-                case 0:
-                    indices = (selecting_slice, slice(None), z_indices[i])
-                case 1:
-                    indices = (slice(None), selecting_slice, z_indices[i])
+            if axis == 0:
+                indices = (selecting_slice, slice(None), z_indices[i])
+            elif axis == 1:
+                indices = (slice(None), selecting_slice, z_indices[i])
             area_mask[indices] = 1
             # everything "before" the lowest z index
             selecting_slice = slice(axis_indices[0], None) if one_after else slice(None, axis_indices[0])
@@ -116,13 +115,12 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         idx = get_extremal_idx(organ_segmentation, axis, get_largest_index)
         area_mask = np.zeros_like(organ_segmentation)
         selecting_slice = slice(idx, None) if one_after else slice(None, idx)
-        match axis:
-            case 0:
-                indices = (selecting_slice, Ellipsis)
-            case 1:
-                indices = (slice(None), selecting_slice, slice(None))
-            case 2:
-                indices = (Ellipsis, selecting_slice)
+        if axis == 0:
+            indices = (selecting_slice, Ellipsis)
+        elif axis == 1:
+            indices = (slice(None), selecting_slice, slice(None))
+        elif axis == 2:
+            indices = (Ellipsis, selecting_slice)
         area_mask[indices] = 1
     return area_mask
 
