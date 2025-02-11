@@ -1,18 +1,9 @@
 level_specs = {
-    'level_ia_left': {
+    'level_ia': {
         'inferior border': [{'border': ['inferior border'], 'structure': 'platysma_left'}], #Pixel le plus haut du Plastysma
         'superior border': [{'border': ['superior border'], 'structure': 'submandibular_gland_left'}], #Pixel le plus bas
         'posterior border': [{'border': ['anterior border'], 'structure': 'hyoid'}], #pixel le plus postérieure
         'anterior border': [{'border': ['posterior border'], 'structure': 'skull'}], #pixel le plus antérieure
-        'left border': [{'border': ['right border'], 'structure': 'digastric_left'}],
-        'right border': [{'border': ['left border'], 'structure': 'digastric_right'}]
-        },
-    'level_ia_right': {
-        'inferior border': [{'border': ['inferior border'], 'structure': 'platysma_right'}], #Pixel le plus haut du Plastysma
-        'superior border': [{'border': ['superior border'], 'structure': 'submandibular_gland_right'}], #Pixel le plus bas
-        'posterior border': [{'border': ['anterior border'], 'structure': 'hyoid'}], #pixel le plus postérieure
-        'anterior border': [{'border': ['posterior border'], 'structure': 'skull'}], #pixel le plus antérieure
-#        'lateral border': [{'border': ['lateral border'], 'structure': 'digastric_right'}]
         'left border': [{'border': ['right border'], 'structure': 'digastric_left'}],
         'right border': [{'border': ['left border'], 'structure': 'digastric_right'}]
         },
