@@ -83,7 +83,7 @@ level_specs = {
         },
     'level_v_left': {
         'inferior border': [{'border': ['inferior border'], 'structure': 'clavicula_left'}],
-        'superior border': [{'border': ['superior border'], 'structure': 'hyoid'}],
+        'superior border': [{'border': ['inferior border'], 'structure': 'hyoid'}],
         'posterior border': [{'border': ['posterior border'], 'structure': 'trapezius_left'}],
         'anterior border': [{'border': ['posterior border'], 'structure': 'sternocleidomastoid_left'}],
         'left border': [{'border': ['left border'], 'structure': 'platysma_left'}],
@@ -91,7 +91,7 @@ level_specs = {
         },
     'level_v_right': {
         'inferior border': [{'border': ['inferior border'], 'structure': 'clavicula_right'}],
-        'superior border': [{'border': ['superior border'], 'structure': 'hyoid'}],
+        'superior border': [{'border': ['inferior border'], 'structure': 'hyoid'}],
         'posterior border': [{'border': ['posterior border'], 'structure': 'trapezius_right'}],
         'anterior border': [{'border': ['posterior border'], 'structure': 'sternocleidomastoid_right'}],
         'left border': [{'border': ['right border'], 'structure': 'anterior_scalene_right'}],
