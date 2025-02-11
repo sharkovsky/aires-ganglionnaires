@@ -70,7 +70,7 @@ level_specs = {
         'superior border': [{'border': ['inferior border'], 'structure': 'cricoid_cartilage'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior border'], 'structure': 'anterior_scalene_left'}],
         'anterior border': [{'border': ['posterior border'], 'structure': 'sternocleidomastoid_left'}],
-        'left border': [{'border': ['left border'], 'structure': 'anterior_scalene_left'}],
+        'left border': [{'border': ['right border'], 'structure': 'anterior_scalene_left'}],
         'right border': [{'border': ['right border'], 'structure': 'common_carotid_artery_left'}] #coupe axiale de son pixel le plus à droite 
         },
     'level_iv_right': {
@@ -79,7 +79,7 @@ level_specs = {
         'posterior border': [{'border': ['posterior border'], 'structure': 'anterior_scalene_right'}],
         'anterior border': [{'border': ['posterior border'], 'structure': 'sternocleidomastoid_right'}],
         'left border': [{'border': ['left border'], 'structure': 'common_carotid_artery_right'}], #coupe axiale de son pixel le plus à gauche
-        'right border': [{'border': ['right border'], 'structure': 'anterior_scalene_right'}]
+        'right border': [{'border': ['left border'], 'structure': 'anterior_scalene_right'}]
         },
     'level_v_left': {
         'inferior border': [{'border': ['inferior border'], 'structure': 'clavicula_left'}],
