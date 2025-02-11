@@ -12,7 +12,7 @@ level_specs = {
         'superior border': [{'border': ['superior border'], 'structure': 'submandibular_gland_left'}], #Pixel le plus haut
         'posterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
         'anterior border': [{'border': ['anterior border'], 'structure': 'skull'}], #pixel le plus antérieure
-        'left border': [{'border': ['left border'], 'structure': 'platysma_left'}],
+        'left border': [{'border': ['left border'], 'structure': 'skull'}],
         'right border': [{'border': ['right border'], 'structure': 'digastric_left'}] #pixel les plus ) gauche
         },
     'level_ib_right': {
@@ -22,7 +22,7 @@ level_specs = {
         'anterior border': [{'border': ['anterior border'], 'structure': 'skull'}], #pixel le plus antérieure
 #        'lateral border': [{'border': ['lateral border'], 'structure': 'medial_surface_of_mandible'}]
         'left border': [{'border': ['left border'], 'structure': 'digastric_right'}], #pixels les plus à droites
-        'right border': [{'border': ['right border'], 'structure': 'platysma_right'}]
+        'right border': [{'border': ['right border'], 'structure': 'skull'}]
         },
     'level_ii_left': {
         'inferior border': [{'border': ['inferior border'], 'structure': 'hyoid'}], #pixel le plus bas
