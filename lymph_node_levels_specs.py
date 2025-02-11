@@ -108,7 +108,7 @@ level_specs = {
         'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
         'superior border': [{'border': ['inferior border'], 'structure': 'thyroid_cartilage'}], #pixel le plus bas
         'posterior border': [{'border': ['anterior border'], 'structure': 'prevertebral_left'}], #pixel les plu santérieures
-        'anterior border': [{'border': ['posterior border'], 'structure': 'thyrohyoid_left'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior border'], 'structure': 'trachea'}], #pixel le plus postérieure
         'left border': [{'border': ['right border'], 'structure': 'common_carotid_artery_left'}], #pixel le plus à droite
         'right border': [{'border': ['left border'], 'structure': 'trachea'}]
         },
@@ -116,7 +116,7 @@ level_specs = {
         'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
         'superior border': [{'border': ['inferior border'], 'structure': 'thyroid_cartilage'}], #pixel le plus bas
         'posterior border': [{'border': ['anterior border'], 'structure': 'prevertebral_right'}], #pixel les plu santérieures
-        'anterior border': [{'border': ['posterior border'], 'structure': 'thyrohyoid_right'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior border'], 'structure': 'trachea'}], #pixel le plus postérieure
         'left border': [{'border': ['right border'], 'structure': 'trachea'}],
         'right border': [{'border': ['left border'], 'structure': 'common_carotid_artery_right'}], #pixel le plus à gauche 
         }
