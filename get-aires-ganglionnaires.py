@@ -6,6 +6,7 @@ import multiprocessing
 import numpy as np
 import nibabel as nib
 import pandas as pd
+import torch
 
 
 ##### CONFIGURATION AND PATHS
@@ -22,8 +23,11 @@ path_to_ct = '/mnt/lvssd/common/AI4PET/data_v1.0.0/data/02_intermediate/CAL/CT'
 totalseg_structure_to_task = {struct: task for task in totalseg_tasks for struct in os.listdir(os.path.join(path_to_totalseg_segmentations, task, '0000002_20171205'))}
 output_dir = '/home/francescocremonesiext/new-areas/aires-ganglionnaires/output/cal_cancer_patients'
 
+# Bouding boxes only?
+only_bounding_boxes = False
+if only_bounding_boxes:
+    output_dir += '_bb'
 ##### END CONFIGURATION AND PATHS
-
 
 logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 rootLogger = multiprocessing.get_logger() 
@@ -67,50 +71,52 @@ def process_one_patient(patient):
             return
         rootLogger.debug(f'patient {patient}')
 
-    # Generate each area one-by-one in a loop
-    combined = None
-    for level, specs in level_specs.items():
-        rootLogger.info(f'Computing {level} for {patient}')
-        try:
-            # 1. Start by creating a "box" that defines the area
-            level_mask = define_area_by_specs_with_heuristics(specs, 
-                    patient, 
-                    path_to_totalseg_segmentations, 
-                    totalseg_structure_to_task)
-            # 2. Refinement: remove all other totalsegmentator structures
-            if combined is None:  # Only for the first time: we combine all other totalsegmentator masks 
-                rootLogger.info(f'Combining all totalseg masks for {patient}')
-                combined = np.zeros_like(level_mask, dtype=np.int32)
-                for structure, task in totalseg_structure_to_task.items():
-                    if 'subcutaneous_fat' in structure:
-                        logging.debug(f'Skipping {structure}')
-                        continue
-                    segdata = nib.load(os.path.join(
-                                        path_to_totalseg_segmentations,
-                                        task,
-                                        patient,
-                                        structure
-                                    )).get_fdata()
-                    combined = np.clip(combined + segdata.astype(np.int32), 0, 1)
-                rootLogger.debug(f'Finished combining all masks for {patient}')
-            level_mask *= 1 - combined
-            # 3. Refinement: remove space outside of the body
-            rootLogger.info(f'Removing space outside body for {patient} {level}')
-            body = nib.load(os.path.join(
-                                path_to_totalseg_segmentations,
-                                'body',
-                                patient,
-                                'body.nii.gz'
-                            )).get_fdata()
-            level_mask *= body
-            # Save results
-            result_levels.append(level)
-            volumes.append(level_mask.sum())
-            rootLogger.debug(f'Saving {level}.nii.gz for {patient}')
-            ni_img = nib.Nifti1Image(level_mask, ct_img.affine, ct_img.header)
-            nib.save(ni_img, f'{output_dir}/SEG/{patient}/{level}.nii.gz')   
-        except Exception as e:
-            rootLogger.error(f'Could not process {level} for {patient} because of {e}')
+    with torch.no_grad():
+        # Generate each area one-by-one in a loop
+        combined = None
+        for level, specs in level_specs.items():
+            rootLogger.info(f'Computing {level} for {patient}')
+            try:
+                # 1. Start by creating a "box" that defines the area
+                level_mask = define_area_by_specs_with_heuristics(specs, 
+                        patient, 
+                        path_to_totalseg_segmentations, 
+                        totalseg_structure_to_task)
+                # 2. Refinement: remove all other totalsegmentator structures
+                if not only_bounding_boxes:
+                    if combined is None:  # Only for the first time: we combine all other totalsegmentator masks 
+                        rootLogger.info(f'Combining all totalseg masks for {patient}')
+                        combined = torch.zeros_like(level_mask, dtype=torch.uint8)
+                        for structure, task in totalseg_structure_to_task.items():
+                            if 'subcutaneous_fat' in structure:
+                                logging.debug(f'Skipping {structure}')
+                                continue
+                            segdata = torch.tensor(nib.load(os.path.join(
+                                                path_to_totalseg_segmentations,
+                                                task,
+                                                patient,
+                                                structure
+                                            )).get_fdata()).to(torch.uint8)
+                            combined = torch.clip(combined + segdata, 0, 1)
+                        rootLogger.debug(f'Finished combining all masks for {patient}')
+                    level_mask = level_mask*(1 - combined)
+                # 3. Refinement: remove space outside of the body
+                rootLogger.info(f'Removing space outside body for {patient} {level}')
+                body = torch.tensor(nib.load(os.path.join(
+                                    path_to_totalseg_segmentations,
+                                    'body',
+                                    patient,
+                                    'body.nii.gz'
+                                )).get_fdata()).to(torch.uint8)
+                level_mask = level_mask*body
+                # Save results
+                result_levels.append(level)
+                volumes.append(level_mask.sum())
+                rootLogger.debug(f'Saving {level}.nii.gz for {patient}')
+                ni_img = nib.Nifti1Image(level_mask, ct_img.affine, ct_img.header)
+                nib.save(ni_img, f'{output_dir}/SEG/{patient}/{level}.nii.gz')   
+            except Exception as e:
+                rootLogger.error(f'Could not process {level} for {patient} because of {e}')
     rootLogger.debug(f'Saving volumes for {patient}')
     pixdim = ct_img.header['pixdim']
     vox_vol = pixdim[1] * pixdim[2] * pixdim[3]
@@ -124,7 +130,7 @@ if __name__ == '__main__':
     patients_df = pd.read_csv('compliant_scan_ids_cancer_patients.csv')
     patients = patients_df['compliant_scan_ids'].values.tolist()
     rootLogger.info('Starting now')
-    pool = multiprocessing.Pool(processes=4)
+    pool = multiprocessing.Pool(processes=8)
     pool.map(process_one_patient, patients)
 
 
