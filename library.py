@@ -77,7 +77,7 @@ def get_extremal_idx_line_by_line(organ_segmentation: 'ImageSegmentation', axis:
             indices[ax1].append(int(ax1_idx))
             indices[ax2].append(int(ax2_idx))
             indices[axis].append(int(axis_idx))
-    return indices
+    return list(map(lambda x: np.array(x), indices))
     
 
 def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
@@ -119,6 +119,8 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
             selecting_slice[ax2] = axis_indices[ax2][i]
             selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
             area_mask[*selecting_slice] = 1
+        # Note: extensions work making some specific assumptions:
+        # the behaviour for z-direction extension (which is always ax1) is different than the left-right or anterior-posterior extension
         # extend under min ax1
         ax1_idx = np.min(axis_indices[ax1])
         w = np.where(axis_indices[ax1] == ax1_idx)[0]
@@ -137,25 +139,22 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
             selecting_slice[ax2] = axis_indices[ax2][i]
             selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
             area_mask[*selecting_slice] = 1
-         # extend under min ax2
-        ax2_idx = np.min(axis_indices[ax2])
-        w = np.where(axis_indices[ax2] == ax2_idx)[0]
-        for i in w:
+        # slice-by-slice extension for the other axis (left-right or anterior-posterior)
+        for ax1_idx in np.unique(axis_indices[ax1]):
+            w = np.where(axis_indices[ax1] == ax1_idx)[0]
+            i = np.argmin(axis_indices[ax2][w])
             selecting_slice = [slice(None),slice(None),slice(None)]
-            selecting_slice[ax1] = axis_indices[ax1][i] 
-            selecting_slice[ax2] = slice(0,ax2_idx)
-            selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
+            selecting_slice[ax1] = ax1_idx
+            selecting_slice[ax2] = slice(0,axis_indices[ax2][w[i]])
+            selecting_slice[axis] = slice(axis_indices[axis][w[i]], None) if one_after else slice(None, axis_indices[axis][w[i]])
             area_mask[*selecting_slice] = 1
-        # extend over max ax2
-        ax2_idx = np.max(axis_indices[ax2])
-        w = np.where(axis_indices[ax2] == ax2_idx)[0]
-        for i in w:
+            i = np.argmax(axis_indices[ax2][w])
             selecting_slice = [slice(None),slice(None),slice(None)]
-            selecting_slice[ax1] = axis_indices[ax1][i] 
-            selecting_slice[ax2] = slice(ax2_idx,None)
-            selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
+            selecting_slice[ax1] = ax1_idx
+            selecting_slice[ax2] = slice(axis_indices[ax2][w[i]],None)
+            selecting_slice[axis] = slice(axis_indices[axis][w[i]], None) if one_after else slice(None, axis_indices[axis][w[i]])
             area_mask[*selecting_slice] = 1
-    if slice_by_slice:
+    elif slice_by_slice:
         axis_indices, z_indices = get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
         for i in range(len(z_indices)):
             selecting_slice = slice(axis_indices[i], None) if one_after else slice(None, axis_indices[i])
@@ -273,8 +272,8 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
 """
     do_first_borders =  ['superior border', 'inferior border']
     #do_first_borders =  []
-    slice_by_slice_ = False
-    line_by_line = (not slice_by_slice_) and True 
+    slice_by_slice_ = True
+    line_by_line = (not slice_by_slice_) and False 
     def _gen_areas():
         for border in do_first_borders:
             specs = area_specs[border]
