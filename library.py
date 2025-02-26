@@ -1,5 +1,6 @@
 import numpy as np
 import nibabel as nib
+import torch
 from skimage.morphology import label
 import os
 from typing import List, Dict, Optional
@@ -63,11 +64,28 @@ def get_extremal_idx_by_z_slice(organ_segmentation: 'ImageSegmentation', axis: i
     return np.array(axis_indices), z_indices
 
 
+def get_extremal_idx_line_by_line(organ_segmentation: 'ImageSegmentation', axis: int, get_largest_index: bool = True) -> List[int]:
+    indices = [[],[],[]]
+    w = np.array(np.where(organ_segmentation > 0))
+    other_ax = [0,1,2]
+    _ = other_ax.pop(axis)
+    ax1 = other_ax[-1]
+    ax2 = other_ax[0]
+    for ax1_idx in np.unique(w[ax1,:]):
+        for ax2_idx in np.unique(w[ax2,w[ax1,:] == ax1_idx]):
+            axis_idx = np.max(w[axis,(w[ax1,:] == ax1_idx)&(w[ax2,:] == ax2_idx)]) if get_largest_index else np.min(w[axis,(w[ax1,:] == ax1_idx)&(w[ax2,:] == ax2_idx)])
+            indices[ax1].append(int(ax1_idx))
+            indices[ax2].append(int(ax2_idx))
+            indices[axis].append(int(axis_idx))
+    return list(map(lambda x: np.array(x), indices))
+    
+
 def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
                          axis: int,
                          get_largest_index: bool = True,
                          one_after: bool = True,
-                         slice_by_slice: bool = False) -> 'ImageSegmentation':
+                         slice_by_slice: bool = False,
+                         line_by_line: bool = False) -> 'ImageSegmentation':
     """Returns a new mask that defines a 3d-rectangular area in the image.
 
     The new mask is split in two areas, divided by the plane perpendicular to `axis` at the position 
@@ -87,8 +105,56 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         area_mask: a binary image with the same shape as mask 
 
     """
-    if slice_by_slice:
-        area_mask = np.zeros_like(organ_segmentation)
+    #print(type(organ_segmentation))
+    area_mask = torch.zeros_like(organ_segmentation)
+    if line_by_line:
+        axis_indices = get_extremal_idx_line_by_line(organ_segmentation, axis, get_largest_index)
+        other_ax = [0,1,2]
+        _ = other_ax.pop(axis)
+        ax1 = other_ax[-1]
+        ax2 = other_ax[0]
+        for i in range(len(axis_indices[0])):
+            selecting_slice = [slice(None),slice(None),slice(None)]
+            selecting_slice[ax1] = axis_indices[ax1][i]
+            selecting_slice[ax2] = axis_indices[ax2][i]
+            selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
+            area_mask[*selecting_slice] = 1
+        # Note: extensions work making some specific assumptions:
+        # the behaviour for z-direction extension (which is always ax1) is different than the left-right or anterior-posterior extension
+        # extend under min ax1
+        ax1_idx = np.min(axis_indices[ax1])
+        w = np.where(axis_indices[ax1] == ax1_idx)[0]
+        for i in w:
+            selecting_slice = [slice(None),slice(None),slice(None)]
+            selecting_slice[ax1] = slice(0,ax1_idx)
+            selecting_slice[ax2] = axis_indices[ax2][i]
+            selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
+            area_mask[*selecting_slice] = 1
+        # extend over max ax1
+        ax1_idx = np.max(axis_indices[ax1])
+        w = np.where(axis_indices[ax1] == ax1_idx)[0]
+        for i in w:
+            selecting_slice = [slice(None),slice(None),slice(None)]
+            selecting_slice[ax1] = slice(ax1_idx,None)
+            selecting_slice[ax2] = axis_indices[ax2][i]
+            selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
+            area_mask[*selecting_slice] = 1
+        # slice-by-slice extension for the other axis (left-right or anterior-posterior)
+        for ax1_idx in np.unique(axis_indices[ax1]):
+            w = np.where(axis_indices[ax1] == ax1_idx)[0]
+            i = np.argmin(axis_indices[ax2][w])
+            selecting_slice = [slice(None),slice(None),slice(None)]
+            selecting_slice[ax1] = ax1_idx
+            selecting_slice[ax2] = slice(0,axis_indices[ax2][w[i]])
+            selecting_slice[axis] = slice(axis_indices[axis][w[i]], None) if one_after else slice(None, axis_indices[axis][w[i]])
+            area_mask[*selecting_slice] = 1
+            i = np.argmax(axis_indices[ax2][w])
+            selecting_slice = [slice(None),slice(None),slice(None)]
+            selecting_slice[ax1] = ax1_idx
+            selecting_slice[ax2] = slice(axis_indices[ax2][w[i]],None)
+            selecting_slice[axis] = slice(axis_indices[axis][w[i]], None) if one_after else slice(None, axis_indices[axis][w[i]])
+            area_mask[*selecting_slice] = 1
+    elif slice_by_slice:
         axis_indices, z_indices = get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
         for i in range(len(z_indices)):
             selecting_slice = slice(axis_indices[i], None) if one_after else slice(None, axis_indices[i])
@@ -106,14 +172,13 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
             area_mask[indices] = 1
             # everything "after" the highest z index
             selecting_slice = slice(axis_indices[-1], None) if one_after else slice(None, axis_indices[-1])
-            if axis == 0:
+            if axis == 0*[]:
                 indices = (selecting_slice, slice(None), slice(z_indices[-1],None))
             elif axis == 1:
                 indices = (slice(None), selecting_slice, slice(z_indices[-1],None))
             area_mask[indices] = 1
     else:
         idx = get_extremal_idx(organ_segmentation, axis, get_largest_index)
-        area_mask = np.zeros_like(organ_segmentation)
         selecting_slice = slice(idx, None) if one_after else slice(None, idx)
         if axis == 0:
             indices = (selecting_slice, Ellipsis)
@@ -204,7 +269,9 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
 ```
 """
     do_first_borders =  ['superior border', 'inferior border']
+    #do_first_borders =  []
     slice_by_slice_ = True
+    line_by_line = (not slice_by_slice_) and False 
     def _gen_areas():
         for border in do_first_borders:
             specs = area_specs[border]
@@ -220,13 +287,14 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
                         patient,
                         seg_filename
                     )
-                    organ_segmentation = nib.load(seg_file_path).get_fdata()
-                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, False)  # slice-by-slice always False for z borders
+                    organ_segmentation = torch.tensor(nib.load(seg_file_path).get_fdata()).to(torch.uint8)
+                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, False, False)  # slice-by-slice and line-by-line always False for z borders
  
         # do the other borders
         for border, specs in area_specs.items():
             if border in do_first_borders:
                 continue
+            #print(f'{patient} {border}')
             one_after_ = specs_to_args[border]['one_after']
             axis_ = specs_to_args[border]['axis']
             for organ_border_specs in specs:
@@ -239,8 +307,9 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
                         patient,
                         seg_filename
                     )
-                    organ_segmentation = nib.load(seg_file_path).get_fdata()
-                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, slice_by_slice_)
+                    organ_segmentation = torch.tensor(nib.load(seg_file_path).get_fdata()).to(torch.uint8)
+                    #print(f'Finished loading {seg_filename}')
+                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, slice_by_slice_, line_by_line)
     return reduce(lambda x,y: x*y, _gen_areas())
 
 
