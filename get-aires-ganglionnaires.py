@@ -116,7 +116,9 @@ def process_one_patient(patient):
                 volumes.append(level_mask.sum())
                 bboxes.append(bbox)
                 rootLogger.debug(f'Saving {level}.nii.gz for {patient}')
+                level_mask = level_mask.cpu().numpy().astype(np.uint8)
                 ni_img = nib.Nifti1Image(level_mask, ct_img.affine, ct_img.header)
+                ni_img.set_data_dtype(np.uint8)
                 nib.save(ni_img, f'{output_dir}/SEG/{patient}/{level}.nii.gz')   
             except Exception as e:
                 rootLogger.error(f'Could not process {level} for {patient} because of {e}')
