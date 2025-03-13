@@ -90,7 +90,7 @@ def process_one_patient(patient):
                         rootLogger.info(f'Combining all totalseg masks for {patient}')
                         combined = torch.zeros_like(level_mask, dtype=torch.uint8)
                         for structure, task in totalseg_structure_to_task.items():
-                            if 'subcutaneous_fat' in structure:
+                            if '_fat.nii' in structure:
                                 logging.debug(f'Skipping {structure}')
                                 continue
                             segdata = torch.tensor(nib.load(os.path.join(
