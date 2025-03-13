@@ -112,15 +112,39 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         axis_indices = get_extremal_idx_line_by_line(organ_segmentation, axis, get_largest_index)
         other_ax = [0,1,2]
         _ = other_ax.pop(axis)
-        ax1 = other_ax[-1]
+        ax1 = other_ax[-1]  # always z dimension
         ax2 = other_ax[0]
-        for i in range(len(axis_indices[0])):
+        # slice by slice
+        for slice_ in np.unique(axis_indices[ax1]):
+            w = np.where(axis_indices[ax1] == slice_)[0]
+            # from 0 until min ax2
+            minax2idx = np.argmin(axis_indices[ax2][w])
             selecting_slice = [slice(None),slice(None),slice(None)]
-            selecting_slice[ax1] = axis_indices[ax1][i]
-            selecting_slice[ax2] = axis_indices[ax2][i]
-            selecting_slice[axis] = slice(axis_indices[axis][i], None) if one_after else slice(None, axis_indices[axis][i])
+            selecting_slice[ax1] = slice_
+            selecting_slice[ax2] = slice(0,axis_indices[ax2][w[minax2idx]])
+            selecting_slice[axis] = slice(axis_indices[axis][w[minax2idx]], None) if one_after else slice(None, axis_indices[axis][w[minax2idx]])
             area_mask[*selecting_slice] = 1
-        # Note: extensions work making some specific assumptions:
+            # inside the structure, i.e. between min ax2 and max ax2
+            maxax2idx = np.argmax(axis_indices[ax2][w])
+            for ax2_coord in range(axis_indices[ax2][w[minax2idx]],axis_indices[ax2][w[maxax2idx]]):
+                selecting_slice = [slice(None),slice(None),slice(None)]
+                selecting_slice[ax1] = slice_
+                selecting_slice[ax2] = ax2_coord
+                try:
+                    axis_idx = np.where(axis_indices[ax2][w] == ax2_coord)[0][0]
+                except IndexError:
+                    # ignore and use previous value of axis_idx
+                    pass
+                selecting_slice[axis] = slice(axis_indices[axis][w[axis_idx]], None) if one_after else slice(None, axis_indices[axis][w[axis_idx]])
+                area_mask[*selecting_slice] = 1
+            # from max ax2 until the end
+            selecting_slice = [slice(None),slice(None),slice(None)]
+            selecting_slice[ax1] = slice_
+            selecting_slice[ax2] = slice(axis_indices[ax2][w[maxax2idx]], None)
+            selecting_slice[axis] = slice(axis_indices[axis][w[maxax2idx]], None) if one_after else slice(None, axis_indices[axis][w[maxax2idx]])
+            area_mask[*selecting_slice] = 1
+        # extensions
+        # note: extensions work making some specific assumptions:
         # the behaviour for z-direction extension (which is always ax1) is different than the left-right or anterior-posterior extension
         # extend under min ax1: base case
         ax1_idx = np.min(axis_indices[ax1])
@@ -170,21 +194,6 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         selecting_slice[ax2] = slice(axis_indices[ax2][w[maxax2idx]],None)
         selecting_slice[axis] = slice(axis_indices[axis][w[maxax2idx]], None) if one_after else slice(None, axis_indices[axis][w[maxax2idx]])
         area_mask[*selecting_slice] = 1
-        # slice-by-slice extension for the other axis (left-right or anterior-posterior)
-        for ax1_idx in np.unique(axis_indices[ax1]):
-            w = np.where(axis_indices[ax1] == ax1_idx)[0]
-            i = np.argmin(axis_indices[ax2][w])
-            selecting_slice = [slice(None),slice(None),slice(None)]
-            selecting_slice[ax1] = ax1_idx
-            selecting_slice[ax2] = slice(0,axis_indices[ax2][w[i]])
-            selecting_slice[axis] = slice(axis_indices[axis][w[i]], None) if one_after else slice(None, axis_indices[axis][w[i]])
-            area_mask[*selecting_slice] = 1
-            i = np.argmax(axis_indices[ax2][w])
-            selecting_slice = [slice(None),slice(None),slice(None)]
-            selecting_slice[ax1] = ax1_idx
-            selecting_slice[ax2] = slice(axis_indices[ax2][w[i]],None)
-            selecting_slice[axis] = slice(axis_indices[axis][w[i]], None) if one_after else slice(None, axis_indices[axis][w[i]])
-            area_mask[*selecting_slice] = 1
     elif slice_by_slice:
         axis_indices, z_indices = get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
         for i in range(len(z_indices)):
