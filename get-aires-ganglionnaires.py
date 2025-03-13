@@ -1,4 +1,4 @@
-from library import define_area_by_specs_with_heuristics, totalseg_tasks
+from library import define_area_by_specs_with_heuristics, totalseg_tasks, totalseg_tasks_local, get_bbox
 from lymph_node_levels_specs import level_specs
 import os
 import logging
@@ -46,6 +46,7 @@ rootLogger.addHandler(consoleHandler)
 
 def process_one_patient(patient):
     volumes = list()
+    bboxes = list()
     result_levels = list()
 
     rootLogger.info(f'Patient {patient}')
@@ -82,6 +83,7 @@ def process_one_patient(patient):
                         patient, 
                         path_to_totalseg_segmentations, 
                         totalseg_structure_to_task)
+                bbox = get_bbox(level_mask)
                 # 2. Refinement: remove all other totalsegmentator structures
                 if not only_bounding_boxes:
                     if combined is None:  # Only for the first time: we combine all other totalsegmentator masks 
@@ -112,6 +114,7 @@ def process_one_patient(patient):
                 # Save results
                 result_levels.append(level)
                 volumes.append(level_mask.sum())
+                bboxes.append(bbox)
                 rootLogger.debug(f'Saving {level}.nii.gz for {patient}')
                 ni_img = nib.Nifti1Image(level_mask, ct_img.affine, ct_img.header)
                 nib.save(ni_img, f'{output_dir}/SEG/{patient}/{level}.nii.gz')   
@@ -121,6 +124,9 @@ def process_one_patient(patient):
     pixdim = ct_img.header['pixdim']
     vox_vol = pixdim[1] * pixdim[2] * pixdim[3]
     df = pd.DataFrame({'patient': [patient]*len(volumes), 'level': result_levels, 'volume [vx]': volumes, 'voxel_volume [mm^3/vx]': [vox_vol]*len(volumes)})
+    for ax in range(3):
+        df[f'bbox_ax{ax}_lo'] = [box[0][ax] for box in bboxes]
+        df[f'bbox_ax{ax}_hi'] = [box[1][ax] for box in bboxes]
     os.makedirs(f'{output_dir}/VOL/{patient}', exist_ok=True)
     df.to_csv(f'{output_dir}/VOL/{patient}/volumes.csv', index=False)
 

@@ -8,6 +8,7 @@ from functools import reduce
 
 
 totalseg_tasks = ['total', 'tissue', 'head_muscles', 'head_glands_cavities', 'headneck_bones_vessels', 'headneck_muscles']
+totalseg_tasks_local = ['total', 'tissue_4_types', 'head_muscles', 'head_glands_cavities', 'headneck_bones_vessels', 'headneck_muscles']
 
 
 specs_to_args = {
@@ -324,3 +325,12 @@ def extract_largest_connected_component(mask):
             max_vol = vol_
     return (label_img == max_label).astype(np.int32)
 
+def get_bbox(label):
+    w = np.where(label > 0)
+    bbox_coords=[[],[]]
+    for ax in range(3):
+        lo,hi = w[ax].min(), w[ax].max()
+        #print(f'{ax}, {lo}, {hi}')
+        bbox_coords[0].append(lo)
+        bbox_coords[1].append(hi)
+    return bbox_coords
