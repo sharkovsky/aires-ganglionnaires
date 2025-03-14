@@ -115,8 +115,21 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         ax1 = other_ax[-1]  # always z dimension
         ax2 = other_ax[0]
         # slice by slice
-        for slice_ in np.unique(axis_indices[ax1]):
+        bbox_slices_min, bbox_slices_max = axis_indices[ax1].min(), axis_indices[ax1].max()
+        for slice_ in range(bbox_slices_min, bbox_slices_max+1):
             w = np.where(axis_indices[ax1] == slice_)[0]
+            if len(w) == 0:
+                # slice was not segmented: replicate previous slice
+                selecting_slice = [slice(None),slice(None),slice(None)]
+                selecting_slice[ax1] = slice_ - 1
+                selecting_slice[ax2] = slice(None)
+                selecting_slice[axis] = slice(None)
+                setting_slice = [slice(None),slice(None),slice(None)]
+                setting_slice[ax1] = slice_
+                setting_slice[ax2] = slice(None)
+                setting_slice[axis] = slice(None)
+                area_mask[*setting_slice] = area_mask[*selecting_slice]
+                continue
             # from 0 until min ax2
             minax2idx = np.argmin(axis_indices[ax2][w])
             selecting_slice = [slice(None),slice(None),slice(None)]
@@ -373,3 +386,11 @@ def get_bbox(label):
         bbox_coords[0].append(lo)
         bbox_coords[1].append(hi)
     return bbox_coords
+
+def refine_empty_slices(mask):
+    nonzeroslices = torch.where(mask.sum(axis=(0,1)) > 0)[0]
+    for i in range(nonzeroslices.min(), nonzeroslices.max()+1):
+        if i not in nonzeroslices:
+            mask[...,i] = mask[...,i-1]
+    return mask
+

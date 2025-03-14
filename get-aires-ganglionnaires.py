@@ -1,4 +1,4 @@
-from library import define_area_by_specs_with_heuristics, totalseg_tasks, totalseg_tasks_local, get_bbox
+from library import define_area_by_specs_with_heuristics, totalseg_tasks, totalseg_tasks_local, get_bbox, refine_empty_slices
 from lymph_node_levels_specs import level_specs
 import os
 import logging
@@ -111,6 +111,9 @@ def process_one_patient(patient):
                                     'body.nii.gz'
                                 )).get_fdata()).to(torch.uint8)
                 level_mask = level_mask*body
+                # 4. Refinement: fill empty slices
+                rootLogger.info(f'Refining empty slices for {patient} {level}')
+                level_mask = refine_empty_slices(level_mask)
                 # Save results
                 result_levels.append(level)
                 volumes.append(level_mask.sum())
