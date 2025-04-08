@@ -1,6 +1,6 @@
 level_specs = {
     'level_ia': {
-        'inferior border': [{'border': ['inferior border'], 'structure': 'platysma_left'}], #Pixel le plus haut du Plastysma
+        'inferior border': [{'border': ['inferior border'], 'structure': 'hyoid'}], #Pixel le plus haut du Plastysma
         'superior border': [{'border': ['superior border'], 'structure': 'submandibular_gland_left'}], #Pixel le plus bas
         'posterior border': [{'border': ['anterior border'], 'structure': 'hyoid'}], #pixel le plus postérieure
         'anterior border': [{'border': ['posterior border'], 'structure': 'skull'}], #pixel le plus antérieure
