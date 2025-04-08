@@ -77,7 +77,7 @@ level_specs = {
         'superior border': [{'border': ['inferior border'], 'structure': 'hyoid'}],
         'posterior border': [{'border': ['anterior border'], 'structure': 'trapezius_left'}],
         'anterior border': [{'border': ['posterior border'], 'structure': 'sternocleidomastoid_left'}],
-        'left border': [{'border': ['left border'], 'structure': 'platysma_left'}],
+        'left border': [{'border': ['left border'], 'structure': 'trapezius_left'}],
         'right border': [{'border': ['left border'], 'structure': 'anterior_scalene_left'}]
         },
     'level_v_right': {
@@ -86,7 +86,7 @@ level_specs = {
         'posterior border': [{'border': ['anterior border'], 'structure': 'trapezius_right'}],
         'anterior border': [{'border': ['posterior border'], 'structure': 'sternocleidomastoid_right'}],
         'left border': [{'border': ['right border'], 'structure': 'anterior_scalene_right'}],
-        'right border': [{'border': ['right border'], 'structure': 'platysma_right'}]
+        'right border': [{'border': ['right border'], 'structure': 'trapezius_right'}]
         },
     'level_via_left': {
         'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
