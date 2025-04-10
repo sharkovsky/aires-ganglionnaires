@@ -11,13 +11,28 @@ totalseg_tasks = ['total', 'tissue', 'head_muscles', 'head_glands_cavities', 'he
 totalseg_tasks_local = ['total', 'tissue_4_types', 'head_muscles', 'head_glands_cavities', 'headneck_bones_vessels', 'headneck_muscles']
 
 
-specs_to_args = {
-    'inferior border': {'axis': 2, 'get_largest_index': False,  'one_after': True},
-    'superior border': {'axis': 2, 'get_largest_index': True,  'one_after': False},
-    'anterior border': {'axis': 1, 'get_largest_index': False,  'one_after': True},
-    'posterior border': {'axis': 1, 'get_largest_index': True,  'one_after': False},
-    'left border': {'axis': 0, 'get_largest_index': True,  'one_after': False},
-    'right border': {'axis': 0, 'get_largest_index': False,  'one_after': True},
+area_border_specs_to_args = {  # these are the target area's borders
+    'inferior border': {'axis': 2, 'one_after': True},
+    'superior border': {'axis': 2, 'one_after': False},
+    'anterior border': {'axis': 1, 'one_after': True},
+    'posterior border': {'axis': 1, 'one_after': False},
+    'left border': {'axis': 0, 'one_after': False},
+    'right border': {'axis': 0, 'one_after': True},
+}
+
+structure_border_specs_to_args = {  # these are the anchor structure's borders
+    'inferior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
+    'superior border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
+    'anterior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
+    'posterior border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
+    'left border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
+    'right border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
+    'inferior point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
+    'superior point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
+    'anterior point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
+    'posterior point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
+    'left point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
+    'right point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
 }
 
 
@@ -272,12 +287,12 @@ def define_area_by_specs(area_specs: Dict[str, List[Dict]],
 """
     def _gen_areas():
         for border, specs in area_specs.items():
-            one_after_ = specs_to_args[border]['one_after']
-            axis_ = specs_to_args[border]['axis']
+            one_after_ = area_border_specs_to_args[border]['one_after']
+            axis_ = area_border_specs_to_args[border]['axis']
             for organ_border_specs in specs:
                 seg_filename = organ_border_specs['structure'] + '.nii.gz'
                 for organ_border_name in organ_border_specs['border']:
-                    get_largest_index_ = specs_to_args[organ_border_name]['get_largest_index']
+                    get_largest_index_ = area_border_specs_to_args[organ_border_name]['get_largest_index']
                     seg_file_path = os.path.join(
                         path_to_totalseg_segmentations,
                         totalseg_structure_to_task[seg_filename],
@@ -323,17 +338,15 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
 """
     do_first_borders =  ['superior border', 'inferior border']
     #do_first_borders =  []
-    slice_by_slice_ = False
-    line_by_line = (not slice_by_slice_) and True 
     def _gen_areas():
         for border in do_first_borders:
             specs = area_specs[border]
-            one_after_ = specs_to_args[border]['one_after']
-            axis_ = specs_to_args[border]['axis']
+            one_after_ = area_border_specs_to_args[border]['one_after']
+            axis_ = area_border_specs_to_args[border]['axis']
             for organ_border_specs in specs:
                 seg_filename = organ_border_specs['structure'] + '.nii.gz'
                 for organ_border_name in organ_border_specs['border']:
-                    get_largest_index_ = specs_to_args[organ_border_name]['get_largest_index']
+                    get_largest_index_ = structure_border_specs_to_args[organ_border_name]['get_largest_index']
                     seg_file_path = os.path.join(
                         path_to_totalseg_segmentations,
                         totalseg_structure_to_task[seg_filename],
@@ -348,12 +361,12 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
             if border in do_first_borders:
                 continue
             #print(f'{patient} {border}')
-            one_after_ = specs_to_args[border]['one_after']
-            axis_ = specs_to_args[border]['axis']
+            one_after_ = area_border_specs_to_args[border]['one_after']
+            axis_ = area_border_specs_to_args[border]['axis']
             for organ_border_specs in specs:
                 seg_filename = organ_border_specs['structure'] + '.nii.gz'
                 for organ_border_name in organ_border_specs['border']:
-                    get_largest_index_ = specs_to_args[organ_border_name]['get_largest_index']
+                    kwargs = structure_border_specs_to_args[organ_border_name]
                     seg_file_path = os.path.join(
                         path_to_totalseg_segmentations,
                         totalseg_structure_to_task[seg_filename],
@@ -362,7 +375,7 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
                     )
                     organ_segmentation = torch.tensor(nib.load(seg_file_path).get_fdata()).to(torch.uint8)
                     #print(f'Finished loading {seg_filename}')
-                yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, slice_by_slice_, line_by_line)
+                yield define_area_by_plane(organ_segmentation, axis_, one_after=one_after_, **kwargs)
     return reduce(lambda x,y: x*y, _gen_areas())
 
 
