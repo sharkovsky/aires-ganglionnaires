@@ -240,7 +240,7 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
             area_mask[indices] = 1
             # everything "after" the highest z index
             selecting_slice = slice(axis_indices[-1], None) if one_after else slice(None, axis_indices[-1])
-            if axis == 0*[]:
+            if axis == 0:
                 indices = (selecting_slice, slice(None), slice(z_indices[-1],None))
             elif axis == 1:
                 indices = (slice(None), selecting_slice, slice(z_indices[-1],None))
