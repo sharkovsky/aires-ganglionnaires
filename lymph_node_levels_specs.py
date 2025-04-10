@@ -53,8 +53,8 @@ level_specs = {
         'superior border': [{'border': ['inferior border'], 'structure': 'hyoid'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}], #pixel le plus postérierue
         'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_right'}], #pixel le plus antérieure
-        'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_right'}], #pixel touchant le SCM
-        'right border': [{'border': ['right border'], 'structure': 'common_carotid_artery_right'}] #coupe axiale de son pixel le plus à gauche
+        'left border': [{'border': ['left border'], 'structure': 'common_carotid_artery_right'}], #coupe axiale de son pixel le plus à gauche
+        'right border': [{'border': ['right border'], 'structure': 'sternocleidomastoid_right'}], #pixel touchant le SCM
         },
 'level_iv_left': {
         'inferior border': [{'border': ['superior border'], 'structure': 'sternum'}], #pixel le plus haut
