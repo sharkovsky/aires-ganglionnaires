@@ -1,6 +1,7 @@
 from library import define_area_by_specs_with_heuristics, totalseg_tasks, totalseg_tasks_local, get_bbox, refine_empty_slices
 from lymph_node_levels_specs import level_specs
 import os
+from pathlib import Path
 import logging
 import multiprocessing
 import numpy as np
@@ -27,13 +28,28 @@ output_dir = '/home/francescocremonesiext/new-areas/aires-ganglionnaires/output/
 only_bounding_boxes = False
 if only_bounding_boxes:
     output_dir += '_bb'
+    
+# Figure out currently checked out git commit
+with open('./.git/HEAD', 'r') as f:
+    lines = f.readlines()
+ref = lines[0].split(':')[1].strip()
+with open(f'./.git/{ref}', 'r') as f:
+    lines = f.readlines()
+gitsha = lines[0][:10]
+output_dir += f'_{gitsha}'
 ##### END CONFIGURATION AND PATHS
+
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
 logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 rootLogger = multiprocessing.get_logger() 
 rootLogger.setLevel(logging.DEBUG)
 
-fileHandler = logging.FileHandler(f"{output_dir}/aires-ganglionnaires.log")
+outlogfile = f"{output_dir}/aires-ganglionnaires.log"
+if not os.path.exists(outlogfile):
+    Path(outlogfile).touch()
+fileHandler = logging.FileHandler(outlogfile)
 fileHandler.setFormatter(logFormatter)
 fileHandler.setLevel(logging.DEBUG)
 rootLogger.addHandler(fileHandler)
