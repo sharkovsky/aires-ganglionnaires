@@ -26,7 +26,7 @@ level_specs = {
         },
     'level_ii_left': {
         'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
-        'superior border': [{'border': ['superior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
+        'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}], #pixel le plus postérieur
         'anterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
         'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_left'}], #pixel le plus à droite (ne pas prendre le muscle avec)
@@ -34,7 +34,7 @@ level_specs = {
         },
     'level_ii_right': {
         'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
-        'superior border': [{'border': ['superior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
+        'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}], #pixel le plus postérieur
         'anterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
         'left border': [{'border': ['left border'], 'structure': 'internal_carotid_artery_right'}], #coupe axiale du pixel le plus à gauche de la carotide
