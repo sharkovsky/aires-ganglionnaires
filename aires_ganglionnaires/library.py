@@ -3,15 +3,11 @@ import nibabel as nib
 import torch
 from skimage.morphology import label
 import os
-from typing import List, Dict, Optional
+from typing import List, Dict
 from functools import reduce
 
 
-totalseg_tasks = ['total', 'tissue', 'head_muscles', 'head_glands_cavities', 'headneck_bones_vessels', 'headneck_muscles']
-totalseg_tasks_local = ['total', 'tissue_4_types', 'head_muscles', 'head_glands_cavities', 'headneck_bones_vessels', 'headneck_muscles']
-
-
-area_border_specs_to_args = {  # these are the target area's borders
+_area_border_specs_to_args = {  # these are the target area's borders
     'inferior border': {'axis': 2, 'one_after': True},
     'superior border': {'axis': 2, 'one_after': False},
     'anterior border': {'axis': 1, 'one_after': True},
@@ -20,7 +16,7 @@ area_border_specs_to_args = {  # these are the target area's borders
     'right border': {'axis': 0, 'one_after': True},
 }
 
-structure_border_specs_to_args = {  # these are the anchor structure's borders
+_structure_border_specs_to_args = {  # these are the anchor structure's borders
     'inferior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
     'superior border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
     'anterior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
@@ -36,10 +32,11 @@ structure_border_specs_to_args = {  # these are the anchor structure's borders
 }
 
 
-def get_extremal_idx(organ_segmentation: 'ImageSegmentation', axis: int, get_largest_index: bool = True) -> int:
+def _get_extremal_idx(organ_segmentation: 'ImageSegmentation',
+                     axis: int,
+                     get_largest_index: bool = True) -> int:
     """Gets the index corresponding to the first or last nonzero pixel on an axis.
-    
-    
+
     Args:
         organ_segmentation: the binary mask representing the segmentation of an organ
         axis: the integer corresponding to the axis where we want to find the extreme point (e.g. 2 for z axis)
@@ -60,7 +57,7 @@ def get_extremal_idx(organ_segmentation: 'ImageSegmentation', axis: int, get_lar
         pixel_index: the integer index corresponding to the last (resp. first) nonzero pixel on the axis
 
     """
-    all_ax = [0,1,2]
+    all_ax = [0, 1, 2]
     all_ax.pop(axis)
     projection = organ_segmentation
     for ax_ in sorted(all_ax)[::-1]:
@@ -69,7 +66,7 @@ def get_extremal_idx(organ_segmentation: 'ImageSegmentation', axis: int, get_lar
     return pixel_index
 
 
-def get_extremal_idx_by_z_slice(organ_segmentation: 'ImageSegmentation', axis: int, get_largest_index: bool = True) -> List[int]:
+def _get_extremal_idx_by_z_slice(organ_segmentation: 'ImageSegmentation', axis: int, get_largest_index: bool = True) -> List[int]:
     projection = organ_segmentation.sum(1-axis)
     axis_indices = list()
     z_indices = np.unique(np.where(projection > 0)[1])
@@ -80,16 +77,16 @@ def get_extremal_idx_by_z_slice(organ_segmentation: 'ImageSegmentation', axis: i
     return np.array(axis_indices), z_indices
 
 
-def get_extremal_idx_line_by_line(organ_segmentation: 'ImageSegmentation', axis: int, get_largest_index: bool = True) -> List[int]:
-    indices = [[],[],[]]
+def _get_extremal_idx_line_by_line(organ_segmentation: 'ImageSegmentation', axis: int, get_largest_index: bool = True) -> List[int]:
+    indices = [[], [], []]
     w = np.array(np.where(organ_segmentation > 0))
-    other_ax = [0,1,2]
+    other_ax = [0, 1, 2]
     _ = other_ax.pop(axis)
     ax1 = other_ax[-1]
     ax2 = other_ax[0]
-    for ax1_idx in np.unique(w[ax1,:]):
-        for ax2_idx in np.unique(w[ax2,w[ax1,:] == ax1_idx]):
-            axis_idx = np.max(w[axis,(w[ax1,:] == ax1_idx)&(w[ax2,:] == ax2_idx)]) if get_largest_index else np.min(w[axis,(w[ax1,:] == ax1_idx)&(w[ax2,:] == ax2_idx)])
+    for ax1_idx in np.unique(w[ax1, :]):
+        for ax2_idx in np.unique(w[ax2, w[ax1, :] == ax1_idx]):
+            axis_idx = np.max(w[axis, (w[ax1, :] == ax1_idx) & (w[ax2, :] == ax2_idx)]) if get_largest_index else np.min(w[axis, (w[ax1, :] == ax1_idx) & (w[ax2, :] == ax2_idx)])
             indices[ax1].append(int(ax1_idx))
             indices[ax2].append(int(ax2_idx))
             indices[axis].append(int(axis_idx))
@@ -121,11 +118,10 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         area_mask: a binary image with the same shape as mask 
 
     """
-    #print(type(organ_segmentation))
     area_mask = torch.zeros_like(organ_segmentation)
     if line_by_line:
-        axis_indices = get_extremal_idx_line_by_line(organ_segmentation, axis, get_largest_index)
-        other_ax = [0,1,2]
+        axis_indices = _get_extremal_idx_line_by_line(organ_segmentation, axis, get_largest_index)
+        other_ax = [0, 1, 2]
         _ = other_ax.pop(axis)
         ax1 = other_ax[-1]  # always z dimension
         ax2 = other_ax[0]
@@ -223,7 +219,7 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         selecting_slice[axis] = slice(axis_indices[axis][w[maxax2idx]], None) if one_after else slice(None, axis_indices[axis][w[maxax2idx]])
         area_mask[*selecting_slice] = 1
     elif slice_by_slice:
-        axis_indices, z_indices = get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
+        axis_indices, z_indices = _get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
         for i in range(len(z_indices)):
             selecting_slice = slice(axis_indices[i], None) if one_after else slice(None, axis_indices[i])
             if axis == 0:
@@ -246,7 +242,7 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
                 indices = (slice(None), selecting_slice, slice(z_indices[-1],None))
             area_mask[indices] = 1
     else:
-        idx = get_extremal_idx(organ_segmentation, axis, get_largest_index)
+        idx = _get_extremal_idx(organ_segmentation, axis, get_largest_index)
         selecting_slice = slice(idx, None) if one_after else slice(None, idx)
         if axis == 0:
             indices = (selecting_slice, Ellipsis)
@@ -259,9 +255,9 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
 
 
 def define_area_by_specs(area_specs: Dict[str, List[Dict]],
-        patient: str,
-        path_to_totalseg_segmentations: str,
-        totalseg_structure_to_task) -> 'ImageSegmentation':
+                         patient: str,
+                         path_to_totalseg_segmentations: str,
+                         totalseg_structure_to_task) -> 'ImageSegmentation':
     """Returns a new mask that defines an aire ganglionnaire based on a dictionary of specifications.
 
     The specifications explain how each border of the aire ganglionnaire is defined. 
@@ -287,12 +283,12 @@ def define_area_by_specs(area_specs: Dict[str, List[Dict]],
 """
     def _gen_areas():
         for border, specs in area_specs.items():
-            one_after_ = area_border_specs_to_args[border]['one_after']
-            axis_ = area_border_specs_to_args[border]['axis']
+            one_after_ = _area_border_specs_to_args[border]['one_after']
+            axis_ = _area_border_specs_to_args[border]['axis']
             for organ_border_specs in specs:
                 seg_filename = organ_border_specs['structure'] + '.nii.gz'
                 for organ_border_name in organ_border_specs['border']:
-                    get_largest_index_ = area_border_specs_to_args[organ_border_name]['get_largest_index']
+                    get_largest_index_ = _area_border_specs_to_args[organ_border_name]['get_largest_index']
                     seg_file_path = os.path.join(
                         path_to_totalseg_segmentations,
                         totalseg_structure_to_task[seg_filename],
@@ -305,9 +301,9 @@ def define_area_by_specs(area_specs: Dict[str, List[Dict]],
 
 
 def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
-        patient: str,
-        path_to_totalseg_segmentations: str,
-        totalseg_structure_to_task) -> 'ImageSegmentation':
+                                         patient: str,
+                                         path_to_totalseg_segmentations: str,
+                                         totalseg_structure_to_task) -> 'ImageSegmentation':
     """Returns a new mask that defines an aire ganglionnaire based on a dictionary of specifications.
 
     Implements some heuristics:
@@ -337,16 +333,15 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
 ```
 """
     do_first_borders =  ['superior border', 'inferior border']
-    #do_first_borders =  []
     def _gen_areas():
         for border in do_first_borders:
             specs = area_specs[border]
-            one_after_ = area_border_specs_to_args[border]['one_after']
-            axis_ = area_border_specs_to_args[border]['axis']
+            one_after_ = _area_border_specs_to_args[border]['one_after']
+            axis_ = _area_border_specs_to_args[border]['axis']
             for organ_border_specs in specs:
                 seg_filename = organ_border_specs['structure'] + '.nii.gz'
                 for organ_border_name in organ_border_specs['border']:
-                    get_largest_index_ = structure_border_specs_to_args[organ_border_name]['get_largest_index']
+                    get_largest_index_ = _structure_border_specs_to_args[organ_border_name]['get_largest_index']
                     seg_file_path = os.path.join(
                         path_to_totalseg_segmentations,
                         totalseg_structure_to_task[seg_filename],
@@ -355,18 +350,16 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
                     )
                     organ_segmentation = torch.tensor(nib.load(seg_file_path).get_fdata()).to(torch.uint8)
                 yield define_area_by_plane(organ_segmentation, axis_, get_largest_index_, one_after_, False, False)  # slice-by-slice and line-by-line always False for z borders
- 
         # do the other borders
         for border, specs in area_specs.items():
             if border in do_first_borders:
                 continue
-            #print(f'{patient} {border}')
-            one_after_ = area_border_specs_to_args[border]['one_after']
-            axis_ = area_border_specs_to_args[border]['axis']
+            one_after_ = _area_border_specs_to_args[border]['one_after']
+            axis_ = _area_border_specs_to_args[border]['axis']
             for organ_border_specs in specs:
                 seg_filename = organ_border_specs['structure'] + '.nii.gz'
                 for organ_border_name in organ_border_specs['border']:
-                    kwargs = structure_border_specs_to_args[organ_border_name]
+                    kwargs = _structure_border_specs_to_args[organ_border_name]
                     seg_file_path = os.path.join(
                         path_to_totalseg_segmentations,
                         totalseg_structure_to_task[seg_filename],
@@ -374,7 +367,6 @@ def define_area_by_specs_with_heuristics(area_specs: Dict[str, List[Dict]],
                         seg_filename
                     )
                     organ_segmentation = torch.tensor(nib.load(seg_file_path).get_fdata()).to(torch.uint8)
-                    #print(f'Finished loading {seg_filename}')
                 yield define_area_by_plane(organ_segmentation, axis_, one_after=one_after_, **kwargs)
     return reduce(lambda x,y: x*y, _gen_areas())
 
@@ -390,6 +382,7 @@ def extract_largest_connected_component(mask):
             max_vol = vol_
     return (label_img == max_label).astype(np.int32)
 
+
 def get_bbox(label):
     w = np.where(label > 0)
     bbox_coords=[[],[]]
@@ -399,6 +392,7 @@ def get_bbox(label):
         bbox_coords[0].append(lo)
         bbox_coords[1].append(hi)
     return bbox_coords
+
 
 def refine_empty_slices(mask):
     nonzeroslices = torch.where(mask.sum(axis=(0,1)) > 0)[0]

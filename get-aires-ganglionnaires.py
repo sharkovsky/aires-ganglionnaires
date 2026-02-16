@@ -1,4 +1,5 @@
-from library import define_area_by_specs_with_heuristics, totalseg_tasks, totalseg_tasks_local, get_bbox, refine_empty_slices
+from aires_ganglionnaires import define_area_by_specs_with_heuristics, get_bbox, refine_empty_slices
+from aires_ganglionnaires.constants import totalseg_tasks
 from lymph_node_levels_specs import level_specs
 import os
 from pathlib import Path
