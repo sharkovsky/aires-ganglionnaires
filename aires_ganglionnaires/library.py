@@ -254,6 +254,10 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
     return area_mask
 
 
+def borders2args(area_border: str, structure_border: str):
+    return _area_border_specs_to_args[area_border], _structure_border_specs_to_args[structure_border]
+
+
 def define_area_by_specs(area_specs: Dict[str, List[Dict]],
                          patient: str,
                          path_to_totalseg_segmentations: str,
