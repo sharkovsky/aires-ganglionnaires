@@ -40,20 +40,31 @@ levelname2num_cal['level_iib_left'] = [5]
 levelname2num_cal['level_iia_right'] = [6]
 levelname2num_cal['level_iib_right'] = [6]
 
+#levelname2num_lnctv = {
+#     "level_ib_left": [6],
+#     "level_ib_right": [5],
+#     "level_ii_left": [2],
+#     "level_ii_right": [1],
+#     "level_iii_left": [2],
+#     "level_iii_right": [1],
+#     "level_iv_left": [4],
+#     "level_iv_right": [3],
+#     "level_va_left": [2],
+#     "level_va_right": [1],
+#     "level_vb_left": [4],
+#     "level_vb_right": [3]
+#}
+
+
 levelname2num_lnctv = {
-     "level_ib_left": [6],
-     "level_ib_right": [5],
-     "level_ii_left": [2],
-     "level_ii_right": [1],
-     "level_iii_left": [2],
-     "level_iii_right": [1],
-     "level_iv_left": [4],
-     "level_iv_right": [3],
-     "level_va_left": [2],
-     "level_va_right": [1],
-     "level_vb_left": [4],
-     "level_vb_right": [3]
+        "level_ib_left": [6],
+        "level_ib_right": [5],
+        "level_ii_iii_va_left": [2],
+        "level_ii_iii_va_right": [1],
+        "level_iv_vb_left": [4],
+        "level_iv_vb_right": [3]
 }
+
 
 levelnames_combined = {
     'level_ib':  ['ib'],
