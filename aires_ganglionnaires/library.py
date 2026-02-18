@@ -10,25 +10,25 @@ from functools import reduce
 _area_border_specs_to_args = {  # these are the target area's borders
     'inferior border': {'axis': 2, 'one_after': True},
     'superior border': {'axis': 2, 'one_after': False},
-    'anterior border': {'axis': 1, 'one_after': True},
-    'posterior border': {'axis': 1, 'one_after': False},
-    'left border': {'axis': 0, 'one_after': False},
-    'right border': {'axis': 0, 'one_after': True},
+    'anterior border': {'axis': 1, 'one_after': False},
+    'posterior border': {'axis': 1, 'one_after': True},
+    'left border': {'axis': 0, 'one_after': True},
+    'right border': {'axis': 0, 'one_after': False},
 }
 
 _structure_border_specs_to_args = {  # these are the anchor structure's borders
     'inferior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
     'superior border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
-    'anterior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
-    'posterior border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
-    'left border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
-    'right border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
+    'anterior border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
+    'posterior border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
+    'left border': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': True},
+    'right border': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': True},
     'inferior point': {'get_largest_index': False, 'slice_by_slice': False, 'line_by_line': False},
     'superior point': {'get_largest_index': True, 'slice_by_slice': False, 'line_by_line': False},
-    'anterior point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
-    'posterior point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
-    'left point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
-    'right point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
+    'anterior point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
+    'posterior point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
+    'left point': {'get_largest_index': False, 'slice_by_slice': True, 'line_by_line': False},
+    'right point': {'get_largest_index': True, 'slice_by_slice': True, 'line_by_line': False},
 }
 
 
