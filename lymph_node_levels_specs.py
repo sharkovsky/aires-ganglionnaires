@@ -1,4 +1,4 @@
-level_specs = {
+level_specs_cal = {
     'level_ia': {
         'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #Pixel le plus haut du Plastysma
         'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_left'}], #Pixel le plus bas
@@ -10,16 +10,16 @@ level_specs = {
     'level_ib_left': {
         'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
         'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_left'}], #Pixel le plus haut
-        'posterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
-        'anterior border': [{'border': ['anterior border'], 'structure': 'skull'}], #pixel le plus antérieure
+        'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
         'left border': [{'border': ['right border'], 'structure': 'platysma_left'}],
         'right border': [{'border': ['right border'], 'structure': 'digastric_left'}] #pixel les plus ) gauche
         },
     'level_ib_right': {
         'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
         'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_right'}], #Pixel le plus bas
-        'posterior border': [{'border': ['posterior border'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
-        'anterior border': [{'border': ['anterior border'], 'structure': 'skull'}], #pixel le plus antérieure
+        'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
 #        'lateral border': [{'border': ['lateral border'], 'structure': 'medial_surface_of_mandible'}]
         'left border': [{'border': ['left border'], 'structure': 'digastric_right'}], #pixels les plus à droites
         'right border': [{'border': ['left border'], 'structure': 'platysma_right'}]
@@ -122,3 +122,107 @@ level_specs = {
         }
     }
 
+
+level_specs_lnctv = {
+    'level_ib_left': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
+        'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_left'}], #Pixel le plus haut
+        'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
+        'left border': [{'border': ['right border'], 'structure': 'platysma_left'}],
+        'right border': [{'border': ['right border'], 'structure': 'digastric_left'}] #pixel les plus ) gauche
+        },
+    'level_ib_right': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
+        'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_right'}], #Pixel le plus bas
+        'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
+#        'lateral border': [{'border': ['lateral border'], 'structure': 'medial_surface_of_mandible'}]
+        'left border': [{'border': ['left border'], 'structure': 'digastric_right'}], #pixels les plus à droites
+        'right border': [{'border': ['left border'], 'structure': 'platysma_right'}]
+        },
+    'level_ii_iii_va_left': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
+        'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'anterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_left'}],
+        'right border': [{'border': ['right border'], 'structure': 'internal_carotid_artery_left'}] #coupe axiale du pixel le plus à droite de la carotide
+        },
+    'level_ii_iii_va_right': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
+        'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'anterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'left border': [{'border': ['right border'], 'structure': 'internal_carotid_artery_right'}],
+        'right border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_right'}] #coupe axiale du pixel le plus à droite de la carotide
+        },
+    'level_iv_vb_left': {
+        'inferior border': [{'border': ['superior point'], 'structure': 'sternum'}], 
+        'superior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'posterior border': [{'border': ['anterior border'], 'structure': 'trapezius_left'}],
+        'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'left border': [{'border': ['left border'], 'structure': 'trapezius_left'}],
+        'right border': [{'border': ['right border'], 'structure': 'common_carotid_artery_left'}]
+        },
+    'level_iv_vb_right': {
+        'inferior border': [{'border': ['superior point'], 'structure': 'sternum'}], 
+        'superior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'posterior border': [{'border': ['anterior border'], 'structure': 'trapezius_right'}],
+        'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'left border': [{'border': ['right border'], 'structure': 'common_carotid_artery_right'}],
+        'right border': [{'border': ['left border'], 'structure': 'trapezius_right'}]
+        },
+    }
+
+level_specs_lnctv = {
+    'level_ib_left': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
+        'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_left'}], #Pixel le plus haut
+        'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_left'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
+        'left border': [{'border': ['right border'], 'structure': 'platysma_left'}],
+        'right border': [{'border': ['right border'], 'structure': 'digastric_left'}] #pixel les plus ) gauche
+        },
+    'level_ib_right': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'hyoid'}], #pixel le plus bas
+        'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_right'}], #Pixel le plus bas
+        'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
+        'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
+#        'lateral border': [{'border': ['lateral border'], 'structure': 'medial_surface_of_mandible'}]
+        'left border': [{'border': ['left border'], 'structure': 'digastric_right'}], #pixels les plus à droites
+        'right border': [{'border': ['left border'], 'structure': 'platysma_right'}]
+        },
+    'level_ii_iii_va_left': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
+        'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'anterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_left'}],
+        'right border': [{'border': ['right border'], 'structure': 'internal_carotid_artery_left'}] #coupe axiale du pixel le plus à droite de la carotide
+        },
+    'level_ii_iii_va_right': {
+        'inferior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
+        'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'anterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'left border': [{'border': ['right border'], 'structure': 'internal_carotid_artery_right'}],
+        'right border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_right'}] #coupe axiale du pixel le plus à droite de la carotide
+        },
+    'level_iv_vb_left': {
+        'inferior border': [{'border': ['superior point'], 'structure': 'sternum'}], 
+        'superior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'posterior border': [{'border': ['anterior border'], 'structure': 'trapezius_left'}],
+        'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'left border': [{'border': ['left border'], 'structure': 'trapezius_left'}],
+        'right border': [{'border': ['right border'], 'structure': 'common_carotid_artery_left'}]
+        },
+    'level_iv_vb_right': {
+        'inferior border': [{'border': ['superior point'], 'structure': 'sternum'}], 
+        'superior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
+        'posterior border': [{'border': ['anterior border'], 'structure': 'trapezius_right'}],
+        'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'left border': [{'border': ['right border'], 'structure': 'common_carotid_artery_right'}],
+        'right border': [{'border': ['left border'], 'structure': 'trapezius_right'}]
+        },
+    }
