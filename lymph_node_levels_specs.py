@@ -137,7 +137,6 @@ level_specs_lnctv = {
         'superior border': [{'border': ['superior point'], 'structure': 'submandibular_gland_right'}], #Pixel le plus bas
         'posterior border': [{'border': ['posterior point'], 'structure': 'submandibular_gland_right'}], #pixel le plus postérieure
         'anterior border': [{'border': ['posterior point'], 'structure': 'skull'}], #pixel le plus antérieure
-#        'lateral border': [{'border': ['lateral border'], 'structure': 'medial_surface_of_mandible'}]
         'left border': [{'border': ['left border'], 'structure': 'digastric_right'}], #pixels les plus à droites
         'right border': [{'border': ['left border'], 'structure': 'platysma_right'}]
         },
@@ -197,7 +196,7 @@ level_specs_lnctv = {
         'inferior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
         'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}],
-        'anterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_left'}],
+        'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_left'}],
         'left border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_left'}],
         'right border': [{'border': ['right border'], 'structure': 'internal_carotid_artery_left'}] #coupe axiale du pixel le plus à droite de la carotide
         },
@@ -205,7 +204,7 @@ level_specs_lnctv = {
         'inferior border': [{'border': ['inferior point'], 'structure': 'cricoid_cartilage'}],
         'superior border': [{'border': ['inferior point'], 'structure': 'vertebrae_C1'}], #pixel le plus bas
         'posterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}],
-        'anterior border': [{'border': ['posterior point'], 'structure': 'sternocleidomastoid_right'}],
+        'anterior border': [{'border': ['anterior point'], 'structure': 'sternocleidomastoid_right'}],
         'left border': [{'border': ['right border'], 'structure': 'internal_carotid_artery_right'}],
         'right border': [{'border': ['left border'], 'structure': 'sternocleidomastoid_right'}] #coupe axiale du pixel le plus à droite de la carotide
         },
