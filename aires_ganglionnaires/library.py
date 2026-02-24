@@ -127,7 +127,7 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         ax2 = other_ax[0]
         # slice by slice
         bbox_slices_min, bbox_slices_max = axis_indices[ax1].min(), axis_indices[ax1].max()
-        for slice_ in range(bbox_slices_min, bbox_slices_max+1):
+        for slice_ in reversed(range(bbox_slices_min, bbox_slices_max+1)):
             w = np.where(axis_indices[ax1] == slice_)[0]
             if len(w) == 0:
                 # slice was not segmented: replicate previous slice
@@ -220,27 +220,27 @@ def define_area_by_plane(organ_segmentation: 'ImageSegmentation',
         area_mask[*selecting_slice] = 1
     elif slice_by_slice:
         axis_indices, z_indices = _get_extremal_idx_by_z_slice(organ_segmentation, axis, get_largest_index)
-        for i in range(len(z_indices)):
+        for i in reversed(range(len(z_indices))):
             selecting_slice = slice(axis_indices[i], None) if one_after else slice(None, axis_indices[i])
             if axis == 0:
                 indices = (selecting_slice, slice(None), z_indices[i])
             elif axis == 1:
                 indices = (slice(None), selecting_slice, z_indices[i])
             area_mask[indices] = 1
-            # everything "before" the lowest z index
-            selecting_slice = slice(axis_indices[0], None) if one_after else slice(None, axis_indices[0])
-            if axis == 0:
-                indices = (selecting_slice, slice(None), slice(0,z_indices[0]))
-            elif axis == 1:
-                indices = (slice(None), selecting_slice, slice(0,z_indices[0]))
-            area_mask[indices] = 1
-            # everything "after" the highest z index
-            selecting_slice = slice(axis_indices[-1], None) if one_after else slice(None, axis_indices[-1])
-            if axis == 0:
-                indices = (selecting_slice, slice(None), slice(z_indices[-1],None))
-            elif axis == 1:
-                indices = (slice(None), selecting_slice, slice(z_indices[-1],None))
-            area_mask[indices] = 1
+        # everything "before" the lowest z index
+        selecting_slice = slice(axis_indices[0], None) if one_after else slice(None, axis_indices[0])
+        if axis == 0:
+            indices = (selecting_slice, slice(None), slice(0,z_indices[0]))
+        elif axis == 1:
+            indices = (slice(None), selecting_slice, slice(0,z_indices[0]))
+        area_mask[indices] = 1
+        # everything "after" the highest z index
+        selecting_slice = slice(axis_indices[-1], None) if one_after else slice(None, axis_indices[-1])
+        if axis == 0:
+            indices = (selecting_slice, slice(None), slice(z_indices[-1],None))
+        elif axis == 1:
+            indices = (slice(None), selecting_slice, slice(z_indices[-1],None))
+        area_mask[indices] = 1
     else:
         idx = _get_extremal_idx(organ_segmentation, axis, get_largest_index)
         selecting_slice = slice(idx, None) if one_after else slice(None, idx)
@@ -399,7 +399,10 @@ def get_bbox(label):
 
 
 def refine_empty_slices(mask):
-    nonzeroslices = torch.where(mask.sum(axis=(0,1)) > 0)[0]
+    nonzeroslices = sorted(
+        torch.where(mask.sum(axis=(0,1)) > 0)[0],
+        reverse=True
+    )
     for i in range(nonzeroslices.min(), nonzeroslices.max()+1):
         if i not in nonzeroslices:
             mask[...,i] = mask[...,i-1]
