@@ -399,11 +399,8 @@ def get_bbox(label):
 
 
 def refine_empty_slices(mask):
-    nonzeroslices = sorted(
-        torch.where(mask.sum(axis=(0,1)) > 0)[0],
-        reverse=True
-    )
-    for i in range(nonzeroslices.min(), nonzeroslices.max()+1):
+    nonzeroslices = torch.where(mask.sum(axis=(0,1)) > 0)[0]
+    for i in reversed(range(nonzeroslices.min(), nonzeroslices.max()+1)):
         if i not in nonzeroslices:
             mask[...,i] = mask[...,i-1]
     return mask
