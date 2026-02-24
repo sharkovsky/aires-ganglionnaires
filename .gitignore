@@ -1,3 +1,11 @@
 OAR*
 submit_*kfold*.sh
-
+__pycache__/
+*.ipynb_checkpoints
+*.npy
+*.pkl
+.DS_Store
+*egg-info/
+dist/
+build/
+.vscode/
